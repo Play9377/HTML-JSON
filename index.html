@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON & HTML Pro 2026 - 全能实验室</title>
+    <style>
+        /* 核心变量与11种护眼淡色主题 */
+        :root {
+            --bg: #f8fafc; --panel: #ffffff; --text: #1e293b; --border: #e2e8f0; --primary: #3b82f6; --accent: #6366f1;
+        }
+        [data-theme="green"]  { --bg: #f0f7f4; --panel: #fcfdfd; --text: #166534; --border: #d1fae5; --primary: #10b981; } 
+        [data-theme="blue"]   { --bg: #f0f9ff; --panel: #f8fafc; --text: #075985; --border: #e0f2fe; --primary: #0ea5e9; } 
+        [data-theme="yellow"] { --bg: #fefce8; --panel: #fffdf2; --text: #854d0e; --border: #fef08a; --primary: #eab308; } 
+        [data-theme="purple"] { --bg: #faf5ff; --panel: #fdfaff; --text: #581c87; --border: #f3e8ff; --primary: #a855f7; } 
+        [data-theme="rose"]   { --bg: #fff1f2; --panel: #fffafb; --text: #9f1239; --border: #ffe4e6; --primary: #fb7185; } 
+        [data-theme="orange"] { --bg: #fff7ed; --panel: #fffaf5; --text: #9a3412; --border: #ffedd5; --primary: #f97316; } 
+        [data-theme="gray"]   { --bg: #f1f5f9; --panel: #f8fafc; --text: #334155; --border: #cbd5e1; --primary: #64748b; } 
+        [data-theme="midnight"] { --bg: #1a1c2c; --panel: #24273d; --text: #b0b3cf; --border: #313552; --primary: #7d83ff; } 
+        [data-theme="mint"]     { --bg: #e6fffa; --panel: #f0fff4; --text: #234e52; --border: #b2f5ea; --primary: #38b2ac; } 
+        [data-theme="vintage"]  { --bg: #f4ece1; --panel: #fdf9f3; --text: #5d4037; --border: #e0d4c3; --primary: #8d6e63; } 
+        [data-theme="aurora"]   { --bg: #effaf3; --panel: #f4fbf7; --text: #2d3748; --border: #c6f6d5; --primary: #667eea; } 
+
+        * { box-sizing: border-box; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+
+        .sidebar { width: 280px; border-right: 1px solid var(--border); background: var(--panel); display: flex; flex-direction: column; padding: 24px; gap: 20px; z-index: 10; overflow-y: auto; }
+        .logo { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        
+        .nav-group { display: flex; flex-direction: column; gap: 10px; }
+        .label { font-size: 12px; font-weight: 600; text-transform: uppercase; opacity: 0.6; letter-spacing: 0.05em; margin-top: 5px; }
+        
+        button { 
+            display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1px solid var(--border); 
+            border-radius: 10px; background: var(--panel); color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); text-align: left;
+        }
+        button:hover { background: var(--primary); color: white !important; border-color: var(--primary); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        button.btn-special { background: var(--bg); border-style: dashed; border-color: var(--primary); }
+
+        select, input { 
+            padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); 
+            color: var(--text); font-size: 14px; outline: none; width: 100%;
+        }
+
+        .main { flex: 1; display: flex; flex-direction: column; padding: 20px; gap: 15px; position: relative; }
+        .editor-wrapper { flex: 1; position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        
+        textarea { 
+            width: 100%; height: 100%; border: none; padding: 25px; background: var(--panel); color: var(--text);
+            font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 14px; line-height: 1.6; outline: none; resize: none;
+        }
+
+        .search-bar { display: flex; gap: 8px; background: var(--panel); padding: 8px; border-radius: 12px; border: 1px solid var(--border); }
+        .footer { font-size: 11px; opacity: 0.5; text-align: center; margin-top: auto; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">JSON/HTML 2026</div>
+        
+        <div class="nav-group">
+            <span class="label">通用处理 (自动识别)</span>
+            <button onclick="handle('format')"><span>✨</span> 自动对齐 (摊开)</button>
+            <button onclick="handle('minify')"><span>📦</span> 一键压缩 (单行)</button>
+        </div>
+
+        <div class="nav-group">
+            <span class="label">JSON 安全中心</span>
+            <button class="btn-special" onclick="handle('obfuscate')"><span>🔒</span> 加密运行代码</button>
+            <button class="btn-special" onclick="handle('decrypt')" style="border-color: #f59e0b;"><span>🔓</span> 明文还原</button>
+        </div>
+
+        <div class="nav-group">
+            <span class="label">11款高质感主题</span>
+            <select onchange="setTheme(this.value)">
+                <optgroup label="经典护眼">
+                    <option value="default">⚪ 默认明亮</option>
+                    <option value="green">🍏 豆沙护眼</option>
+                    <option value="blue">🧊 晴空透蓝</option>
+                    <option value="yellow">📜 羊皮怀旧</option>
+                </optgroup>
+                <optgroup label="时尚淡色">
+                    <option value="purple">🔮 浪漫薰衣草</option>
+                    <option value="rose">🌸 樱粉物语</option>
+                    <option value="orange">🍊 晚霞余晖</option>
+                    <option value="gray">🥈 极简工业</option>
+                </optgroup>
+                <optgroup label="2026 视觉">
+                    <option value="midnight">🌙 深夜静谧</option>
+                    <option value="mint">🌿 薄荷清爽</option>
+                    <option value="vintage">📼 复古磁带</option>
+                    <option value="aurora">🌌 极光幻境</option>
+                </optgroup>
+            </select>
+        </div>
+       <div class="footer">
+            智能识别 JSON / HTML<br>
+            2026.01.25 Updated
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="搜索内容..." onkeydown="if(event.key==='Enter') doSearch()">
+            <button onclick="doSearch()" style="padding: 8px 20px; min-width: 80px;">定位</button>
+        </div>
+
+        <div class="editor-wrapper">
+            <textarea id="editor" spellcheck="false" placeholder="在此粘贴 JSON 或 HTML 代码..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        let searchIndex = 0;
+
+        // HTML 格式化引擎 (摊开)
+        function formatHTML(html) {
+            let indent = '    ';
+            let tab = '';
+            let result = '';
+            const reg = /(>)(<)(\/*)/g;
+            html = html.replace(reg, '$1\r\n$2$3');
+            let div = 0;
+            html.split('\r\n').forEach(function(node) {
+                let indent_step = 0;
+                if (node.match( /.+<\/\w[^>]*>$/ )) indent_step = 0;
+                else if (node.match( /^<\/\w/ )) { if (div != 0) div -= 1; }
+                else if (node.match( /^<\w([^>]*[^\/])?>.*$/ )) indent_step = 1;
+                else indent_step = 0;
+
+                tab = '';
+                for (let i = 0; i < div; i++) tab += indent;
+                result += tab + node + '\r\n';
+                div += indent_step;
+            });
+            return result.trim();
+        }
+
+        // HTML 压缩引擎 (单行)
+        function minifyHTML(html) {
+            return html
+                .replace(/>\s+</g, '><')
+                .replace(/\s{2,}/g, ' ')
+                .replace(/<!--[\s\S]*?-->/g, '')
+                .trim();
+        }
+
+        function handle(type) {
+            let val = editor.value.trim();
+            if (!val) return;
+
+            // 识别是否为 HTML
+            const isHTML = val.trim().startsWith('<');
+
+            try {
+                // 1. 解密逻辑 (仅限混淆的 JSON)
+                if (type === 'decrypt') {
+                    if (val.includes('eval(decodeURIComponent')) {
+                        const decrypted = eval(val.replace('eval(', '('));
+                        editor.value = typeof decrypted === 'string' ? decrypted : JSON.stringify(decrypted, null, 4);
+                    } else { alert("未检测到加密包"); }
+                    return;
+                }
+
+                // 2. 格式化/对齐逻辑
+                if (type === 'format') {
+                    if (isHTML) {
+                        editor.value = formatHTML(val);
+                    } else {
+                        if (val.includes('eval(decodeURIComponent')) val = eval(val.replace('eval(', '('));
+                        editor.value = JSON.stringify(JSON.parse(val), null, 4);
+                    }
+                } 
+                
+                // 3. 压缩逻辑
+                else if (type === 'minify') {
+                    if (isHTML) {
+                        editor.value = minifyHTML(val);
+                    } else {
+                        if (val.includes('eval(decodeURIComponent')) val = eval(val.replace('eval(', '('));
+                        editor.value = JSON.stringify(JSON.parse(val));
+                    }
+                }
+
+                // 4. 加密混淆 (仅限 JSON)
+                else if (type === 'obfuscate') {
+                    if (isHTML) {
+                        alert("加密运行功能目前仅支持 JSON 数据");
+                        return;
+                    }
+                    const str = JSON.stringify(JSON.parse(val));
+                    const b64 = btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
+                    editor.value = `eval(decodeURIComponent(escape(atob("${b64}"))))`;
+                }
+                searchIndex = 0;
+            } catch (e) {
+                alert("格式错误，请检查输入的内容是否完整。");
+            }
+        }
+
+        function doSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) return;
+            const text = editor.value;
+            let index = text.indexOf(query, searchIndex);
+            if (index === -1) index = text.indexOf(query, 0);
+            if (index !== -1) {
+                editor.focus();
+                editor.setSelectionRange(index, index + query.length);
+                const lines = text.substring(0, index).split('\n').length;
+                editor.scrollTop = (lines - 5) * 22.4; 
+                searchIndex = index + query.length;
+            } else { alert("未找到匹配内容"); searchIndex = 0; }
+        }
+
+        function setTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
+
+        editor.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                this.value = this.value.substring(0, start) + "    " + this.value.substring(this.selectionEnd);
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        });
+    </script>
+</body>
+</html>
